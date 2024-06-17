@@ -45,7 +45,7 @@ logging.langsmith("프로젝트명 기입")
 ```
 LangSmith 추적을 시작합니다.
 [프로젝트명]
-CH01-Basic
+(기입한 ㅍ로젝트명)
 ```
 
 ### load_prompt 인코딩 설정 적용
