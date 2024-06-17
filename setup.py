@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="langchain-teddynote",
-    version="0.0.4",
+    version="0.0.5",
     description="LangChain Helper Library",
     author="Teddy Lee",
     author_email="teddylee777@gmail.com",

@@ -1,7 +1,8 @@
 import yaml
 import numpy as np
 from langchain_core.example_selectors.base import BaseExampleSelector
-from langchain_core.prompts import loading, BasePromptTemplate
+from langchain_core.prompts import loading
+from langchain_core.prompts.base import BasePromptTemplate
 
 
 def load_prompt(file_path, encoding="utf8") -> BasePromptTemplate:
