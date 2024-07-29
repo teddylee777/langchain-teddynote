@@ -14,7 +14,7 @@ class HWPLoader(BaseLoader):
     def __init__(self, file_path: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.file_path = file_path
-        self.extra_info = None
+        self.extra_info = {"source": file_path}
         self._initialize_constants()
 
     def _initialize_constants(self) -> None:
