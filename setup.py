@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="langchain-teddynote",
-    version="0.0.12",
+    version="0.0.17",
     description="LangChain Helper Library",
     author="Teddy Lee",
     author_email="teddylee777@gmail.com",
@@ -14,6 +14,8 @@ setup(
         "rank_bm25",
         "pinecone-client[grpc]",
         "pinecone-text",
+        "olefile",
+        "pdf2image",
     ],
     packages=find_packages(exclude=[]),
     keywords=[

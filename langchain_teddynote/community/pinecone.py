@@ -248,19 +248,13 @@ class PineconeKiwiHybridRetriever(BaseRetriever):
         print("namespace", self.namespace)
         final_result = []
         for r in query_response["matches"]:
-            if "page" not in r.metadata:
-                r.metadata["page"] = None
-            if "source" not in r.metadata:
-                r.metadata["source"] = None
-            if "score" not in r:
-                r["score"] = None
-            doc = Document(
-                page_content=r.metadata["context"],
-                metadata={
-                    "source": r.metadata["source"],
-                    "page": r.metadata["page"],
-                    "score": r["score"],
-                },
-            )
+            metadata = dict()
+            if "page" in r.metadata:
+                metadata["page"] = r.metadata["page"]
+            if "source" in r.metadata:
+                metadata["source"] = r.metadata["source"]
+            if "score" in r:
+                metadata["score"] = r["score"]
+            doc = Document(page_content=r.metadata["context"], metadata=metadata)
             final_result.append(doc)
         return final_result
