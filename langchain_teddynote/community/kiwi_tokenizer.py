@@ -1,45 +1,44 @@
 import string
-import nltk
-from typing import List
+from typing import List, Optional
 from kiwipiepy import Kiwi
+import nltk
 
 
 class KiwiBM25Tokenizer:
-    def __init__(
-        self,
-        stop_words: List[str] = None,
-    ):
-        self.nltk_setup()
-        self._stop_words = list(set(stop_words)) if stop_words else None
+    def __init__(self, stop_words: Optional[List[str]] = None):
+        self._setup_nltk()
+        self._stop_words = set(stop_words) if stop_words else set()
         self._punctuation = set(string.punctuation)
-        self._tokenizer = Kiwi()
-
-    def initialize_tokenizer(self):
-        self._tokenizer = Kiwi()
+        self._tokenizer = self._initialize_tokenizer()
 
     @staticmethod
-    def korean_tokenize(tokenizer, text: str) -> List[str]:
+    def _initialize_tokenizer() -> Kiwi:
+        return Kiwi()
+
+    @staticmethod
+    def _tokenize(tokenizer: Kiwi, text: str) -> List[str]:
         return [token.form for token in tokenizer.tokenize(text)]
 
     @staticmethod
-    def nltk_setup() -> None:
+    def _setup_nltk() -> None:
         try:
             nltk.data.find("tokenizers/punkt")
         except LookupError:
             nltk.download("punkt")
 
     def __call__(self, text: str) -> List[str]:
-        tokens = KiwiBM25Tokenizer.korean_tokenize(self._tokenizer, text)
-        tokens = [word.lower() for word in tokens]
-        tokens = [word for word in tokens if word not in self._punctuation]
-        tokens = [word for word in tokens if word not in self._stop_words]
-        return tokens
+        tokens = self._tokenize(self._tokenizer, text)
+        return [
+            word.lower()
+            for word in tokens
+            if word not in self._punctuation and word not in self._stop_words
+        ]
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        del state["_tokenizer"]  # Remove the unpickleable entry
+        del state["_tokenizer"]
         return state
 
     def __setstate__(self, state):
         self.__dict__.update(state)
-        self.initialize_tokenizer()  # Reinitialize the tokenizer
+        self._tokenizer = self._initialize_tokenizer()

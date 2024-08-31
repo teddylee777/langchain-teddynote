@@ -98,6 +98,24 @@ class MultiModal:
         )
         response = self.model.invoke(messages)
         return response.content
+    
+    def batch(
+        self,
+        image_urls: list[str],
+        system_prompts: list[str] = [],
+        user_prompts: list[str] = [],
+        display_image=False,
+    ):
+        messages = []
+        for image_url, system_prompt, user_prompt in zip(
+            image_urls, system_prompts, user_prompts
+        ):
+            message = self.create_messages(
+                image_url, system_prompt, user_prompt, display_image
+            )
+            messages.append(message)
+        response = self.model.batch(messages)
+        return [r.content for r in response]
 
     def stream(
         self, image_url, system_prompt=None, user_prompt=None, display_image=True
