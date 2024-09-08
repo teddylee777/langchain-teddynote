@@ -4,6 +4,8 @@
 
 LangChain 을 사용하면서 불편한 기능이나, 추가적인 기능을 제공합니다.
 
+- [다운로드 통계](https://pypistats.org/packages/langchain-teddynote)
+
 ## 설치
 
 ```bash
