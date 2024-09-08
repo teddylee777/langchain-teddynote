@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="langchain-teddynote",
-    version="0.0.28",
+    version="0.0.30",
     description="LangChain Helper Library",
     author="Teddy Lee",
     author_email="teddylee777@gmail.com",
@@ -16,6 +16,7 @@ setup(
         "pinecone-text",
         "olefile",
         "pdf2image",
+        "openai",
     ],
     packages=find_packages(exclude=[]),
     keywords=[
