@@ -166,3 +166,8 @@ assistant.list_chat_history()
 assistant.clear_chat_history()
 ```
 
+## 튜토리얼
+
+- [Pinecone 커스텀 구현(한글 형태소 분석기)](https://wikidocs.net/252407)
+- [한글 형태소 분석기(Kiwi)가 적용된 BM25 Retriever](https://wikidocs.net/251980)
+
