@@ -1,4 +1,8 @@
 from langchain_core.messages import AIMessageChunk
+from typing import Any, Dict, List, Callable
+from dataclasses import dataclass
+from langchain_core.agents import AgentAction, AgentFinish, AgentStep
+from langchain.agents.output_parsers.tools import ToolAgentAction
 
 
 def stream_response(response, return_output=False):
@@ -26,3 +30,123 @@ def stream_response(response, return_output=False):
             print(token, end="", flush=True)
     if return_output:
         return answer
+
+
+# 도구 호출 시 실행되는 콜백 함수입니다.
+def tool_callback(tool) -> None:
+    print("[도구 호출]")
+    print(f"Tool: {tool.get('tool')}")  # 사용된 도구의 이름을 출력합니다.
+    if tool_input := tool.get("tool_input"):  # 도구에 입력된 값이 있다면
+        for k, v in tool_input.items():
+            print(f"{k}: {v}")  # 입력값의 키와 값을 출력합니다.
+    print(f"Log: {tool.get('log')}")  # 도구 실행 로그를 출력합니다.
+
+
+# 관찰 결과를 출력하는 콜백 함수입니다.
+def observation_callback(observation) -> None:
+    print("[관찰 내용]")
+    print(f"Observation: {observation.get('observation')}")  # 관찰 내용을 출력합니다.
+
+
+# 최종 결과를 출력하는 콜백 함수입니다.
+def result_callback(result: str) -> None:
+    print("[최종 답변]")
+    print(result)  # 최종 답변을 출력합니다.
+
+
+@dataclass
+class AgentCallbacks:
+    """
+    에이전트 콜백 함수들을 포함하는 데이터 클래스입니다.
+
+    Attributes:
+        tool_callback (Callable[[Dict[str, Any]], None]): 도구 사용 시 호출되는 콜백 함수
+        observation_callback (Callable[[Dict[str, Any]], None]): 관찰 결과 처리 시 호출되는 콜백 함수
+        result_callback (Callable[[str], None]): 최종 결과 처리 시 호출되는 콜백 함수
+    """
+
+    tool_callback: Callable[[Dict[str, Any]], None] = tool_callback
+    observation_callback: Callable[[Dict[str, Any]], None] = observation_callback
+    result_callback: Callable[[str], None] = result_callback
+
+
+class AgentStreamParser:
+    """
+    에이전트의 스트림 출력을 파싱하고 처리하는 클래스입니다.
+    """
+
+    def __init__(self, callbacks: AgentCallbacks = AgentCallbacks()):
+        """
+        AgentStreamParser 객체를 초기화합니다.
+
+        Args:
+            callbacks (AgentCallbacks, optional): 파싱 과정에서 사용할 콜백 함수들. 기본값은 AgentCallbacks()입니다.
+        """
+        self.callbacks = callbacks
+        self.output = None
+
+    def process_agent_steps(self, step: Dict[str, Any]) -> None:
+        """
+        에이전트의 단계를 처리합니다.
+
+        Args:
+            step (Dict[str, Any]): 처리할 에이전트 단계 정보
+        """
+        if "actions" in step:
+            self._process_actions(step["actions"])
+        elif "steps" in step:
+            self._process_observations(step["steps"])
+        elif "output" in step:
+            self._process_result(step["output"])
+
+    def _process_actions(self, actions: List[Any]) -> None:
+        """
+        에이전트의 액션들을 처리합니다.
+
+        Args:
+            actions (List[Any]): 처리할 액션 리스트
+        """
+        for action in actions:
+            if isinstance(action, (AgentAction, ToolAgentAction)) and hasattr(
+                action, "tool"
+            ):
+                self._process_tool_call(action)
+
+    def _process_tool_call(self, action: Any) -> None:
+        """
+        도구 호출을 처리합니다.
+
+        Args:
+            action (Any): 처리할 도구 호출 액션
+        """
+        tool_action = {
+            "tool": getattr(action, "tool", None),
+            "tool_input": getattr(action, "tool_input", None),
+            "log": getattr(action, "log", None),
+        }
+        self.callbacks.tool_callback(tool_action)
+
+    def _process_observations(self, observations: List[Any]) -> None:
+        """
+        관찰 결과들을 처리합니다.
+
+        Args:
+            observations (List[Any]): 처리할 관찰 결과 리스트
+        """
+        for observation in observations:
+            observation_dict = {}
+            if isinstance(observation, AgentStep):
+                observation_dict["observation"] = getattr(
+                    observation, "observation", None
+                )
+            self.callbacks.observation_callback(observation_dict)
+
+    def _process_result(self, result: str) -> None:
+        """
+        최종 결과를 처리합니다.
+
+        Args:
+            result (str): 처리할 최종 결과
+        """
+        self.callbacks.result_callback(result)
+        self.output = result

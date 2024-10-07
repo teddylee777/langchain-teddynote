@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="langchain-teddynote",
-    version="0.0.30",
+    version="0.0.37",
     description="LangChain Helper Library",
     author="Teddy Lee",
     author_email="teddylee777@gmail.com",
@@ -17,6 +17,8 @@ setup(
         "olefile",
         "pdf2image",
         "openai",
+        "deepl",
+        "feedparser",
     ],
     packages=find_packages(exclude=[]),
     keywords=[

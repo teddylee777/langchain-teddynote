@@ -42,3 +42,14 @@ class KiwiBM25Tokenizer:
     def __setstate__(self, state):
         self.__dict__.update(state)
         self._tokenizer = self._initialize_tokenizer()
+
+
+class KiwiTokenizer:
+    def __init__(self):
+        self.kiwi = Kiwi()
+
+    def tokenize(self, text, type="list"):
+        if type == "list":
+            return [token.form for token in self.kiwi.tokenize(text)]
+        else:
+            return " ".join([token.form for token in self.kiwi.tokenize(text)])

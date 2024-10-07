@@ -12,6 +12,17 @@ LangChain 을 사용하면서 불편한 기능이나, 추가적인 기능을 제
 pip install langchain-teddynote
 ```
 
+## Dependency 버전 정보
+
+```
+langchain                                0.2.16
+langchain-community                      0.2.17
+langchain-core                           0.2.41
+langchain-teddynote                      0.0.37
+langchain-text-splitters                 0.2.4
+langchainhub                             0.1.21
+```
+
 ## 사용법
 
 ### 스트리밍 출력
