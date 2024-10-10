@@ -8,12 +8,12 @@ from tqdm.auto import tqdm
 
 from langchain_core.callbacks import CallbackManagerForRetrieverRun
 from langchain_core.documents import Document
-from langchain_core.pydantic_v1 import Extra, root_validator
+from pydantic import ConfigDict, model_validator
 from langchain_core.retrievers import BaseRetriever
 from typing import List, Dict, Any, Optional, Tuple
 from langchain_core.embeddings import Embeddings
 
-from pinecone import ServerlessSpec, PodSpec
+from pinecone import ServerlessSpec
 from pinecone.grpc import PineconeGRPC as Pinecone
 from pinecone_text.hybrid import hybrid_convex_scale
 from pinecone_text.sparse import BM25Encoder
@@ -317,11 +317,9 @@ class PineconeKiwiHybridRetriever(BaseRetriever):
     alpha: float = 0.5
     namespace: Optional[str] = None
 
-    class Config:
-        extra = Extra.forbid
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="after")
     def validate_environment(cls, values: Dict) -> Dict:
         """
         필요한 패키지가 설치되어 있는지 확인하는 메서드입니다.
