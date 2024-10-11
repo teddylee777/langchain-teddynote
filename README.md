@@ -14,13 +14,16 @@ pip install langchain-teddynote
 
 ## Dependency 버전 정보
 
+2024-10-11 기준. `langchain` 패키지 버전은 `0.3.3` 입니다.
+
 ```
-langchain                                0.2.16
-langchain-community                      0.2.17
-langchain-core                           0.2.41
-langchain-teddynote                      0.0.37
-langchain-text-splitters                 0.2.4
-langchainhub                             0.1.21
+langchain                                0.3.3
+langchain-community                      0.3.2
+langchain-core                           0.3.10
+langchain-experimental                   0.3.2
+langchain-openai                         0.2.2
+langchain-teddynote                      0.3.0
+langchain-text-splitters                 0.3.0
 ```
 
 ## 사용법
