@@ -100,6 +100,37 @@ answer = multimodal_llm.stream(IMAGE_URL)
 stream_response(answer)
 ```
 
+## DeepL 번역기
+
+```python
+from langchain_teddynote.translate import Translator
+
+# api키 설정
+deepl_api_key = os.getenv("DEEPL_API_KEY")
+
+# 번역 객체 생성(source_lang, target_lang)
+translator = Translator(deepl_api_key, "EN", "KO")
+
+# 번역 실행
+translated_text = translator("hello, nice to meet you")
+print(translated_text)
+```
+
+## Kiwi 형태소 분석기
+
+```python
+from langchain_teddynote.community.kiwi_tokenizer import KiwiTokenizer
+
+# 토크나이저 선언
+kiwi_tokenizer = KiwiTokenizer()
+
+sent1 = "안녕하세요. 반갑습니다. 내 이름은 테디입니다."
+sent2 = "안녕하세용 반갑습니다~^^ 내 이름은 테디입니다!!"
+
+# 토큰화
+print(kiwi_tokenizer.tokenize(sent1))
+print(kiwi_tokenizer.tokenize(sent2))
+```
 
 ## OpenAI Assistant V2 
 
