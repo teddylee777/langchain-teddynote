@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "langchain-teddynote"
+version = "0.3.0"
+description = ""
+authors = ["teddy <teddylee777@gmail.com>"]
+license = "Apache 2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10, <3.11"
+langchain = "^0.3.3"
+langgraph = "^0.2.35"
+kiwipiepy = "^0.19.0"
+konlpy = "^0.6.0"
+rank-bm25 = "^0.2.2"
+pinecone-client = {extras = ["grpc"], version = "^5.0.1"}
+pinecone-text = "^0.9.0"
+olefile = "^0.47"
+pdf2image = "^1.17.0"
+openai = "^1.51.2"
+deepl = "^1.19.1"
+feedparser = "^6.0.11"
+twine = "^5.1.1"
+jupyter = "^1.1.1"
+notebook = "^7.2.2"
+wheel = "^0.44.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Callable
 from dataclasses import dataclass
 from langchain_core.agents import AgentAction, AgentFinish, AgentStep
 from langchain.agents.output_parsers.tools import ToolAgentAction
+from langchain_core.messages import BaseMessage
 
 
 def stream_response(response, return_output=False):
@@ -150,3 +151,8 @@ class AgentStreamParser:
         """
         self.callbacks.result_callback(result)
         self.output = result
+
+
+def pretty_print_messages(messages: list[BaseMessage]):
+    for message in messages:
+        message.pretty_print()
