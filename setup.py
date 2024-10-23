@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="langchain-teddynote",
-    version="0.3.6",
+    version="0.3.12",
     description="LangChain Helper Library",
     author="Teddy Lee",
     author_email="teddylee777@gmail.com",
@@ -20,6 +20,7 @@ setup(
         "openai",
         "deepl",
         "feedparser",
+        "tavily-python",
     ],
     packages=find_packages(exclude=[]),
     keywords=[

@@ -3,9 +3,11 @@ from typing import Any
 
 _module_lookup = {
     "GoogleNews": "tools.news",
+    "TavilySearch": "tools.tavily",
 }
 
 from .news import GoogleNews
+from .tavily import TavilySearch
 
 
 def __getattr__(name: str) -> Any:
@@ -17,4 +19,5 @@ def __getattr__(name: str) -> Any:
 
 __all__ = [
     "GoogleNews",
+    "TavilySearch",
 ]

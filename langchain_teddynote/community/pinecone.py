@@ -291,6 +291,7 @@ def init_pinecone_index(
         "embeddings": embeddings,
         "top_k": top_k,
         "alpha": alpha,
+        "pc": pc,
     }
 
 
@@ -316,6 +317,7 @@ class PineconeKiwiHybridRetriever(BaseRetriever):
     top_k: int = 10
     alpha: float = 0.5
     namespace: Optional[str] = None
+    pc: Any = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -461,14 +463,7 @@ class PineconeKiwiHybridRetriever(BaseRetriever):
             List[Document]: 처리된 문서 리스트
         """
         return [
-            Document(
-                page_content=r.metadata["context"],
-                metadata={
-                    "page": r.metadata.get("page"),
-                    "source": r.metadata.get("source"),
-                    "score": r.get("score"),
-                },
-            )
+            Document(page_content=r.metadata["context"], metadata=r.metadata)
             for r in query_response["matches"]
         ]
 
@@ -486,30 +481,34 @@ class PineconeKiwiHybridRetriever(BaseRetriever):
         Returns:
             List[Document]: 재정렬된 문서 리스트
         """
-        print("[rerank_documents]")
-        rerank_model = kwargs.get("rerank_model", "bge-reranker-v2-m3")
-        top_n = kwargs.get("top_n", len(documents))
-
+        # print("[rerank_documents]")
+        options = kwargs.get("search_kwargs", {})
+        rerank_model = options.get("rerank_model", "bge-reranker-v2-m3")
+        top_n = options.get("top_n", len(documents))
         rerank_docs = [
             {"id": str(i), "text": doc.page_content} for i, doc in enumerate(documents)
         ]
 
-        result = self.index.inference.rerank(
-            model=rerank_model,
-            query=query,
-            documents=rerank_docs,
-            top_n=top_n,
-            return_documents=True,
-        )
-
-        # 재정렬된 결과를 기반으로 문서 리스트 재구성
-        reranked_documents = []
-        for item in result:
-            original_doc = documents[int(item["id"])]
-            reranked_doc = Document(
-                page_content=original_doc.page_content,
-                metadata={**original_doc.metadata, "rerank_score": item["score"]},
+        if self.pc is not None:
+            reranked_result = self.pc.inference.rerank(
+                model=rerank_model,
+                query=query,
+                documents=rerank_docs,
+                top_n=top_n,
+                return_documents=True,
             )
-            reranked_documents.append(reranked_doc)
 
-        return reranked_documents
+            # 재정렬된 결과를 기반으로 문서 리스트 재구성
+            reranked_documents = []
+
+            for item in reranked_result.data:
+                original_doc = documents[int(item["index"])]
+                reranked_doc = Document(
+                    page_content=original_doc.page_content,
+                    metadata={**original_doc.metadata, "rerank_score": item["score"]},
+                )
+                reranked_documents.append(reranked_doc)
+
+            return reranked_documents
+        else:
+            raise ValueError("Pinecone 인덱스가 초기화되지 않았습니다.")
