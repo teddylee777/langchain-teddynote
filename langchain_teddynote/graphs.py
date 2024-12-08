@@ -17,7 +17,7 @@ class NodeStyles:
     )
 
 
-def visualize_graph(graph):
+def visualize_graph(graph, xray=False):
     """
     CompiledStateGraph 객체를 시각화하여 표시합니다.
 
@@ -38,7 +38,7 @@ def visualize_graph(graph):
         if isinstance(graph, CompiledStateGraph):
             display(
                 Image(
-                    graph.get_graph().draw_mermaid_png(
+                    graph.get_graph(xray=xray).draw_mermaid_png(
                         background_color="white",
                         node_colors=NodeStyles(),
                     )

@@ -1,7 +1,7 @@
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 from tavily import TavilyClient
-from typing import Literal, Sequence, Optional
+from typing import Literal, Sequence, Optional, List
 import json
 import os
 
@@ -12,28 +12,29 @@ class TavilySearchInput(BaseModel):
     query: str = Field(description="검색 쿼리")
 
 
-def format_search_result(result: dict, include_raw_content: bool) -> dict:
+def format_search_result(result: dict, include_raw_content: bool = False) -> str:
     """
     Utility functions for formatting search results.
 
     Args:
         result (dict): 원본 검색 결과
-        include_raw_content (bool): 원본 콘텐츠 포함 여부
 
     Returns:
-        dict: 포맷팅된 검색 결과
+        str: XML 형식으로 포맷팅된 검색 결과
     """
-    return {
-        "url": result["url"],
-        "content": json.dumps(
-            {
-                "title": result["title"],
-                "content": result["content"],
-                "raw": result["raw_content"] if include_raw_content else "",
-            },
-            ensure_ascii=False,
-        ),
-    }
+    # 한글 인코딩 처리를 위해 json.dumps() 사용
+    title = json.dumps(result["title"], ensure_ascii=False)[1:-1]
+    content = json.dumps(result["content"], ensure_ascii=False)[1:-1]
+    raw_content = ""
+    if (
+        include_raw_content
+        and "raw_content" in result
+        and result["raw_content"] is not None
+        and len(result["raw_content"].strip()) > 0
+    ):
+        raw_content = f"<raw>{result['raw_content']}</raw>"
+
+    return f"<document><title>{title}</title><url>{result['url']}</url><content>{content}</content>{raw_content}</document>"
 
 
 class TavilySearch(BaseTool):
@@ -45,13 +46,20 @@ class TavilySearch(BaseTool):
     description: str = (
         "A search engine optimized for comprehensive, accurate, and trusted results. "
         "Useful for when you need to answer questions about current events. "
-        "Input should be a search query."
+        "Input should be a search query. [IMPORTANT] Input(query) should be over 5 characters."
     )
     args_schema: type[BaseModel] = TavilySearchInput
     client: TavilyClient = None
     include_domains: list = []
     exclude_domains: list = []
     max_results: int = 3
+    topic: Literal["general", "news"] = "general"
+    days: int = 3
+    search_depth: Literal["basic", "advanced"] = "basic"
+    include_answer: bool = False
+    include_raw_content: bool = True
+    include_images: bool = False
+    format_output: bool = False
 
     def __init__(
         self,
@@ -59,6 +67,13 @@ class TavilySearch(BaseTool):
         include_domains: list = [],
         exclude_domains: list = [],
         max_results: int = 3,
+        topic: Literal["general", "news"] = "general",
+        days: int = 3,
+        search_depth: Literal["basic", "advanced"] = "basic",
+        include_answer: bool = False,
+        include_raw_content: bool = True,
+        include_images: bool = False,
+        format_output: bool = False,
     ):
         """
         TavilySearch 클래스의 인스턴스를 초기화합니다.
@@ -80,25 +95,33 @@ class TavilySearch(BaseTool):
         self.include_domains = include_domains
         self.exclude_domains = exclude_domains
         self.max_results = max_results
+        self.topic = topic
+        self.days = days
+        self.search_depth = search_depth
+        self.include_answer = include_answer
+        self.include_raw_content = include_raw_content
+        self.include_images = include_images
+        self.format_output = format_output
 
     def _run(self, query: str) -> str:
         """BaseTool의 _run 메서드 구현"""
         results = self.search(query)
-        return json.dumps(results, ensure_ascii=False)
+        return results
+        # return json.dumps(results, ensure_ascii=False)
 
     def search(
         self,
         query: str,
-        search_depth: Literal["basic", "advanced"] = "advanced",
-        topic: Literal["general", "news"] = "general",
-        days: int = 3,
+        search_depth: Literal["basic", "advanced"] = None,
+        topic: Literal["general", "news"] = None,
+        days: int = None,
         max_results: int = None,
         include_domains: Sequence[str] = None,
         exclude_domains: Sequence[str] = None,
-        include_answer: bool = False,
-        include_raw_content: bool = True,
-        include_images: bool = False,
-        format_output: bool = True,
+        include_answer: bool = None,
+        include_raw_content: bool = None,
+        include_images: bool = None,
+        format_output: bool = None,
         **kwargs,
     ) -> list:
         """
@@ -121,38 +144,51 @@ class TavilySearch(BaseTool):
         Returns:
             list: 검색 결과 목록
         """
-        if max_results is None:
-            max_results = self.max_results
-
-        if include_domains is None:
-            include_domains = self.include_domains
-
-        if exclude_domains is None:
-            exclude_domains = self.exclude_domains
-
-        response = self.client.search(
-            query,
-            search_depth=search_depth,
-            topic=topic,
-            days=days,
-            max_results=max_results,
-            include_domains=include_domains,
-            exclude_domains=exclude_domains,
-            include_answer=include_answer,
-            include_raw_content=include_raw_content,
-            include_images=include_images,
+        # 기본값 설정
+        params = {
+            "query": query,
+            "search_depth": search_depth or self.search_depth,
+            "topic": topic or self.topic,
+            "max_results": max_results or self.max_results,
+            "include_domains": include_domains or self.include_domains,
+            "exclude_domains": exclude_domains or self.exclude_domains,
+            "include_answer": (
+                include_answer if include_answer is not None else self.include_answer
+            ),
+            "include_raw_content": (
+                include_raw_content
+                if include_raw_content is not None
+                else self.include_raw_content
+            ),
+            "include_images": (
+                include_images if include_images is not None else self.include_images
+            ),
             **kwargs,
-        )
+        }
 
+        # days 파라미터 처리
+        if days is not None:
+            if params["topic"] == "general":
+                print(
+                    "Warning: days parameter is ignored for 'general' topic search. Set topic parameter to 'news' to use days."
+                )
+            else:
+                params["days"] = days
+
+        # API 호출
+        response = self.client.search(**params)
+
+        # 결과 포맷팅
+        format_output = (
+            format_output if format_output is not None else self.format_output
+        )
         if format_output:
-            search_results = [
-                format_search_result(r, include_raw_content)
+            return [
+                format_search_result(r, params["include_raw_content"])
                 for r in response["results"]
             ]
         else:
-            search_results = response["results"]
-
-        return search_results
+            return response["results"]
 
     def get_search_context(
         self,
@@ -190,6 +226,7 @@ class TavilySearch(BaseTool):
             query,
             search_depth=search_depth,
             topic=topic,
+            days=days,
             max_results=max_results,
             include_domains=include_domains,
             exclude_domains=exclude_domains,

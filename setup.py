@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="langchain-teddynote",
-    version="0.3.12",
+    version="0.3.37",
     description="LangChain Helper Library",
     author="Teddy Lee",
     author_email="teddylee777@gmail.com",
@@ -10,17 +10,18 @@ setup(
     install_requires=[
         "langchain",
         "langgraph",
-        "kiwipiepy",
-        "konlpy",
+        "kiwipiepy",    
         "rank_bm25",
         "pinecone-client[grpc]",
         "pinecone-text",
         "olefile",
         "pdf2image",
         "openai",
+        "anthropic",
         "deepl",
         "feedparser",
         "tavily-python",
+        "pandas",
     ],
     packages=find_packages(exclude=[]),
     keywords=[
