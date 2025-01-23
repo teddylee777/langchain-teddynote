@@ -141,9 +141,9 @@ class KiwiBM25Retriever(BaseRetriever):
 
         docs_with_scores = []
         for i, doc in enumerate(self.docs):
-            document = Document(
-                page_content=doc.page_content, metadata={"score": normalized_score[i]}
-            )
+            metadata = doc.metadata.copy()
+            metadata["score"] = normalized_score[i]
+            document = Document(page_content=doc.page_content, metadata=metadata)
             docs_with_scores.append(document)
 
         score_indexes = score_indexes[:top_k]
