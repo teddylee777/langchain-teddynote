@@ -12,20 +12,6 @@ LangChain 을 사용하면서 불편한 기능이나, 추가적인 기능을 제
 pip install langchain-teddynote
 ```
 
-## Dependency 버전 정보
-
-2024-10-11 기준. `langchain` 패키지 버전은 `0.3.3` 입니다.
-
-```
-langchain                                0.3.3
-langchain-community                      0.3.2
-langchain-core                           0.3.10
-langchain-experimental                   0.3.2
-langchain-openai                         0.2.2
-langchain-teddynote                      0.3.0
-langchain-text-splitters                 0.3.0
-```
-
 ## 사용법
 
 ### 스트리밍 출력
@@ -131,6 +117,24 @@ sent2 = "안녕하세용 반갑습니다~^^ 내 이름은 테디입니다!!"
 print(kiwi_tokenizer.tokenize(sent1))
 print(kiwi_tokenizer.tokenize(sent2))
 ```
+
+## Synapsoft DocuAnalyzer
+
+```python
+from langchain_teddynote.document_parser import SynapsoftDocuAnalyzer
+
+api = SynapsoftDocuAnalyzer(api_key="API_KEY 를 입력해 주세요")
+
+# markdown 형식으로 변환(반환 형식: List[str])
+markdown = api.convert_to_markdown("sample.pdf")
+
+# xml 형식으로 변환(반환 형식: List[str])
+xml = api.convert_to_xml("sample.pdf")
+
+# json 형식으로 변환(반환 형식: List[str])
+json = api.convert_to_json("sample.pdf")
+```
+
 
 ## OpenAI Assistant V2 
 
