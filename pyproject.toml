@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "langchain-teddynote"
-version = "0.4.2"
+version = "0.4.3"
 description = "Helper and utility functions for langchain"
 readme = "README.md"
 requires-python = ">=3.10"
