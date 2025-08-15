@@ -39,7 +39,10 @@ from langchain_core.outputs import ChatResult
 class LLMs(Enum):
     GPT4o_MINI = "gpt-4o-mini"
     GPT4o = "gpt-4o"
-    GPT4 = GPT4o_MINI
+    GPT4_1 = "gpt-4.1"
+    GPT4_1_MINI = "gpt-4.1-mini"
+    GPT4_1_NANO = "gpt-4.1-nano"
+    GPT4 = GPT4o
 
     O1_PREVIEW = "o1-preview"
     O1_MINI = "o1-mini"

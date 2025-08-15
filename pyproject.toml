@@ -1,35 +1,55 @@
-[tool.poetry]
-name = "langchain-teddynote"
-version = "0.3.0"
-description = ""
-authors = ["teddy <teddylee777@gmail.com>"]
-license = "Apache 2.0"
-readme = "README.md"
-
-[tool.poetry.dependencies]
-python = ">=3.10"
-langchain = "^0.3"
-langgraph = "^0.2"
-kiwipiepy = "^0.19.0"
-konlpy = "^0.6.0"
-rank-bm25 = "^0.2.2"
-pinecone-client = {extras = ["grpc"], version = "^5.0.1"}
-pinecone-text = "^0.9.0"
-olefile = "^0.47"
-pdf2image = "^1.17.0"
-openai = "^1.51.2"
-deepl = "^1.19.1"
-feedparser = "^6.0.11"
-twine = "^5.1.1"
-jupyter = "^1.1.1"
-notebook = "^7.2.2"
-wheel = "^0.44.0"
-langchain-openai = "^0.2.2"
-tavily-python = "^0.5.0"
-anthropic = "^0.38.0"
-pandas = "^2.2.3"
-
-
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "langchain-teddynote"
+version = "0.4.1"
+description = "Helper and utility functions for langchain"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Teddy Lee", email = "teddylee777@gmail.com"}
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "anthropic>=0.64.0",
+    "deepl>=1.22.0",
+    "feedparser>=6.0.11",
+    "kiwipiepy>=0.21.0",
+    "konlpy>=0.6.0",
+    "langchain>=0.3.27",
+    "langchain-openai>=0.3.30",
+    "langgraph>=0.6.5",
+    "olefile>=0.47",
+    "openai>=1.99.9",
+    "pandas>=2.3.1",
+    "pdf2image>=1.17.0",
+    "pinecone-client>=6.0.0",
+    "pinecone-text>=0.11.0",
+    "python-dotenv>=1.1.1",
+    "rank-bm25>=0.2.2",
+    "tavily-python>=0.7.10",
+    "twine>=6.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/teddylee777/langchain-teddynote"
+Repository = "https://github.com/teddylee777/langchain-teddynote"
+Issues = "https://github.com/teddylee777/langchain-teddynote/issues"
+
+[tool.hatch.version]
+path = "langchain_teddynote/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/langchain_teddynote",
+    "/README.md",
+    "/LICENSE",
+]

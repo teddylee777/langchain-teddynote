@@ -1,18 +1,12 @@
 import importlib
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    from hwp import HWPReader
-    from pdf import PDFParser
+from typing import Any
 
 
 _module_lookup = {
-    "HWPLoader": "document_loaders.hwp",
-    "PDFParser": "document_loaders.pdf",
+    "HWPLoader": "document_loaders.hwp"
 }
 
 from .hwp import HWPLoader
-from .pdf import PDFParser
 
 
 def __getattr__(name: str) -> Any:
@@ -24,5 +18,4 @@ def __getattr__(name: str) -> Any:
 
 __all__ = [
     "HWPLoader",
-    "PDFParser",
 ]
