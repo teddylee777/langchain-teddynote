@@ -1,7 +1,7 @@
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 from tavily import TavilyClient
-from typing import Literal, Sequence, Optional, List
+from typing import Literal, Sequence, Optional
 import json
 import os
 
