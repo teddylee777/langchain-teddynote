@@ -37,6 +37,11 @@ stream_response(answer)
 ```
 ### LangSmith 추적
 
+`LANGSMITH_ENDPOINT` 환경변수가 이미 설정되어 있으면 해당 주소를 유지합니다.
+APAC/EU 리전 또는 자체 호스팅 주소를 사용한다면 `logging.langsmith()` 호출 전에
+환경변수를 설정해 주세요. 설정하지 않으면 기본 주소인
+`https://api.smith.langchain.com`을 사용합니다.
+
 ```python
 # LangSmith 추적을 설정합니다. https://smith.langchain.com
 # 환경변수 설정은 되어 있다고 가정합니다.

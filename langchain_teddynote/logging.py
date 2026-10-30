@@ -19,8 +19,8 @@ def langsmith(project_name=None, set_enable=True):
             )
             return
 
-        os.environ["LANGSMITH_ENDPOINT"] = (
-            "https://api.smith.langchain.com"  # LangSmith API 엔드포인트
+        os.environ.setdefault(
+            "LANGSMITH_ENDPOINT", "https://api.smith.langchain.com"
         )
         os.environ["LANGSMITH_TRACING"] = "true"  # true: 활성화
         os.environ["LANGSMITH_PROJECT"] = project_name  # 프로젝트명
